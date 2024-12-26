@@ -60,26 +60,81 @@ def copy_client_master_tbls(new_app):
     mysql_cursor.execute(query)
     tables = mysql_cursor.fetchall()
 
-    omit_table = {"nlginas_enginefeedback","nlginas_enginefeedbackamc","nlginas_claimrule","nlginas_mndflagging"}
+    omit_table = {"nlginas_enginefeedback","nlginas_enginefeedbackamc","nlginas_claimrule","nlginas_mndflagging","nlginas_score","nlginas_claimrule"
+                "nlginas_flagging_analysis","nlginas_total_flagged","claim_summary","drg_data_2023","masterdata_dental_icd_final","temp_obs_data","topcaremc_resub","daily_data",
+                'activity_uniqueids',
+                'activity_uniqueids_bkp_28april23',
+                'activityuniqueids_new',
+                'activityuniqueids',
+                'claim_uniqueids',
+                'django_migrations',
+                'claim_uniqueids_bkp_28april23',
+                'claimuniqueids_new',
+                'delete_activity',
+                'delete_claim',
+                'nlginas_claimfile',
+                'nlginas_claimfile_17may23',
+                'nlginas_claimfile_bkp_1may',
+                'nlginas_claimfileinfo',
+                'nlginas_claimrule',
+                'nlginas_consolidatedactivity',
+                'nlginas_consolidatedclaim',
+                'nlginas_duplicateconsultationday',
+                'nlginas_duplicateconsultationdayindepth',
+                'nlginas_duplicateconsultationweek',
+                'nlginas_duplicateconsultationweekindepth',
+                'nlginas_enginefeedback',
+                'nlginas_enginefeedbackamc',
+                'nlginas_fileerrors',
+                'nlginas_fileexception',
+                'nlginas_inaweektmp',
+                'claimuniqueids_new',
+                'nlginas_mrictclinician',
+                'nlginasalerts',
+                'nlginas_mrictclinicianindepth',
+                'nlginas_mrictfacility',
+                'nlginas_mrictfacilityindepth',
+                'nlginas_overbillingflagged',
+                'nlginas_overbillingindepth',
+                'nlginas_phantompatientsflagged',
+                'nlginas_phantompatientsindepth',
+                'nlginas_pharmacywithoutconsultation',
+                'nlginas_pharmacywithoutconsultationindepth',
+                'nlginas_pharmacywithoutconsultationtemp',
+                'nlginas_postpaysummary',
+                'nlginas_rule_bk_11062024',
+                'nlginas_rule_bk_20230822',
+                'nlginas_rule_bk_20241223',
+                'nlginas_rule_bkp',
+                'nlginas_rule_bkp_16thmaydeployement',
+                'nlginas_rule_initial',
+                'nlginas_rule_new',
+                'nlginas_rule_prodsample',
+                'nlginas_rule_test',
+                'nlginas_threeormoreconsultationsinaday',
+                'nlginas_threeormoreconsultationsinadayindepth'}
 
     for table in tables:
         table_name = table[0]
-        if table_name.startswith('#') or '_bkp_' in table_name or '_bkp' in table_name or '_bk_' in table_name or 'nirmal' in table_name or 'may23' in table_name or 'aayushi' in table_name or 'covidcodes' in table_name or 'p_to_p_cci_unbundle' in table_name or '16092024' in table_name or 'rule_initial'in table_name or 'rule_new' in table_name or 'sample' in table_name or 'test' in table_name or 'nlginas_claimfile' in table_name or 'fileerrors' in table_name:
+        if table_name.startswith('#') or '_bkp_' in table_name or '_bkp' in table_name or '_bk_' in table_name or 'nirmal' in table_name or 'may23' in table_name or 'aayushi' in table_name or '16092024' in table_name or 'rule_initial'in table_name or 'rule_new' in table_name or 'sample' in table_name or 'test' in table_name or 'nlginas_claimfile' in table_name or 'fileerrors' in table_name:
             continue
-        if table_name.startswith('nlginas_') and table_name not in omit_table:
-
+        if table_name.startswith('sherlock'):
+            continue
+        # if table_name.startswith('nlginas_') and table_name not in omit_table:
+        if  table_name not in omit_table:
             query = f'desc sherlock_nlginas.{table_name}'
             mysql_cursor.execute(query)
             columns = mysql_cursor.fetchall()
 
-            fields = ', '.join([row[0] for row in columns if row[0] != 'id'])
+            # fields = ', '.join([row[0] for row in columns if row[0] != 'id'])
+            fields = ', '.join([row[0] for row in columns ])
 
             query = f'delete from sherlock_{new_app}.{new_app}_{table_name[8:]}'
             mysql_cursor.execute(query)
             mysql_conn.commit()
-
+            new_table_name=table_name.replace("nlginas",new_app)
             # query = f'INSERT INTO sherlock_{new_app}.{new_app}_{table_name[8:]} SELECT * FROM sherlock_nlginas.{table_name}'
-            query = f'insert into sherlock_{new_app}.{new_app}_{table_name[8:]} ({fields}) select {fields} from sherlock_nlginas.{table_name}'
+            query = f'insert into sherlock_{new_app}.{new_table_name} ({fields}) select {fields} from sherlock_nlginas.{table_name}'
             try:
                 print(query)
                 mysql_cursor.execute(query)
@@ -105,19 +160,105 @@ def create_main_tables(new_app):
     mysql_cursor.execute(query)
     tables = mysql_cursor.fetchall()
 
-    omit_table = {"nlginas_flagging_analysis","nlginas_total_flagged","claim_summary",
-                "drg_data_2023","masterdata_dental_icd_final","temp_obs_data","topcaremc_resub","daily_data","claim_uniqueids","activity_uniqueids"}
+    omit_table = {"nlginas_flagging_analysis","nlginas_total_flagged","claim_summary","drg_data_2023","masterdata_dental_icd_final","temp_obs_data","topcaremc_resub","daily_data",
+                'activity_uniqueids',
+                'activity_uniqueids_bkp_28april23',
+                'activityuniqueids_new',
+                'activityuniqueids',
+                'claim_uniqueids',
+                'claim_uniqueids_bkp_28april23',
+                'claimuniqueids_new',
+                'nlginas_claimuniqueids',
+                'nlginas_mndflagging',
+                'delete_activity',
+                'delete_claim',
+                'nlginas_claimfile',
+                'nlginas_claimfile_17may23',
+                'nlginas_claimfile_bkp_1may',
+                'nlginas_claimfileinfo',
+                'nlginas_claimrule',
+                'nlginas_labpanelcheck',
+                'nlginas_organdiseasepanelexclusion',
+                'nlginas_agespecificactivity',
+                'nlginas_agespecificactivityinclusion',
+                'nlginas_claimtype',
+                'daily_data',
+                'nlginas_decisionmaster',
+                'nlginas_denialcodes',
+                'nlginas_dentaltoothnumbertemp',
+                'nlginas_genderspecificactivity',
+                'nlginas_fileexception',
+                'nlginas_hcpcsunitofservice',
+                'nlginas_rulesourcepriority',
+                'nlginas_noncovered',
+                'nlginas_score',
+                'nlginas_consolidatedactivity',
+                'nlginas_consolidatedclaim',
+                'nlginas_treatmenttype',
+                'nlginas_rejectioncodes',
+                'nlginas_cptemirate',
+                'nlginas_ncdcpticdcovered',
+                'nlginas_claimfileinfo',
+                'nlginas_dentalpharmacytemp',
+                'nlginas_dentalpharmacy',
+                'nlginas_dentalpharmacyindepth',
+                'nlginas_dentalextraction',
+                'nlginas_dentalextractionindepth',
+                'nlginas_dentalrestoration',
+                'nlginas_dentalrestorationindepth',
+                'nlginas_dentalrootcanalindepth',
+                'nlginas_dentalrootcanal',
+                'nlginas_dentalimplant',
+                'nlginas_dentalimplantindepth',
+                'nlginas_dentalpontic',
+                'nlginas_dentalponticindepth',
+                'nlginas_duplicateconsultationday',
+                'nlginas_duplicateconsultationdayindepth',
+                'nlginas_duplicateconsultationweek',
+                'nlginas_duplicateconsultationweekindepth',
+                'nlginas_ultrasoundservicesmednec',
+                'nlginas_enginefeedback',
+                'nlginas_enginefeedbackamc',
+                'nlginas_providerids',
+                'nlginas_fileerrors',
+                'nlginas_fileexception',
+                'nlginas_inaweektmp',
+                'nlginas_mrictclinician',
+                'nlginas_mrictclinicianindepth',
+                'nlginas_mrictfacility',
+                'nlginas_mrictfacilityindepth',
+                'nlginas_overbillingflagged',
+                'nlginas_overbillingindepth',
+                'nlginas_phantompatientsflagged',
+                'nlginas_phantompatientsindepth',
+                'nlginas_pharmacywithoutconsultation',
+                'nlginas_pharmacywithoutconsultationindepth',
+                'nlginas_pharmacywithoutconsultationtemp',
+                'nlginas_postpaysummary',
+                'nlginas_rule',
+                'nlginas_rule_bk_11062024',
+                'nlginas_rule_bk_20230822',
+                'nlginas_rule_bk_20241223',
+                'nlginas_rule_bkp',
+                'nlginas_rule_bkp_16thmaydeployement',
+                'nlginas_rule_initial',
+                'nlginas_rule_new',
+                'nlginas_rule_prodsample',
+                'nlginas_rule_test',
+                'nlginas_threeormoreconsultationsinaday',
+                'nlginas_threeormoreconsultationsinadayindepth'}
 
     for table in tables:
         table_name = table[0]
         if table_name.startswith('#') or '_bkp_' in table_name or '_bk_' in table_name or 'nirmal' in table_name: 
             continue
-        if table_name.startswith('nlginas_'):
-            continue
+        # if table_name.startswith('nlginas_'):
+        #     continue
         if table_name in omit_table:
             continue
         # query = f'CREATE TABLE sherlock_{new_app}.{table_name} AS SELECT * FROM sherlock_nlginas.{table_name} LIMIT 0'
-        query = f'CREATE TABLE sherlock_{new_app}.{table_name} LIKE sherlock_nlginas.{table_name} '
+        new_table_name = table_name.replace("nlginas", new_app)
+        query = f'CREATE TABLE sherlock_{new_app}.{new_table_name} LIKE sherlock_nlginas.{table_name} '
 
         mysql_cursor.execute(query)
         print("created table - ", table_name)
@@ -186,7 +327,6 @@ def create_dbs_tbls(new_app):
     create_main_tables(new_app)
     print("tables created")
 
-   
 def create_cnf_file(file_path,new_app,db):
     """
     Creates a .cnf file with the specified configuration data.
@@ -358,7 +498,6 @@ def create_client(new_app):
     # settings_data = {}
     # settings_data['INSTALLED_APPS'] = settings.INSTALLED_APPS
 
-
     # # commented_by_shivam_fr_settingspy(new_app)
     
     # create dbs,stg-main tables
@@ -375,12 +514,12 @@ def create_client(new_app):
              "excel_validation.py","reports.py","reports_constants.py",
              "generate_output.py","engine_feedback_response.py"]  
 
-    #copy_files_with_cp(src_directory, dst_directory, files,new_app)
+    copy_files_with_cp(src_directory, dst_directory, files,new_app)
 
     # edit settings.json
 
     # create config file
-    create_cnf_file(f'''.{new_app}_stg.cnf''',new_app,'stg')
+    create_cnf_file(f'''.{new_app}_stg_db.cnf''',new_app,'stg')
     create_cnf_file(f'''.{new_app}_db.cnf''',new_app,'sherlock')
     
 
@@ -391,9 +530,14 @@ def create_client(new_app):
     # run this function this after manual make migrations, migrate
     # copy_client_master_tbls(new_app)
 
-print(create_client('oman'))
+print(create_client('hts'))
+
+# create_main_tables('oman_prior')
 
 # print(create_dbs_tbls('pllt'))
 
-# print(copy_client_master_tbls('oman'))
+# print(copy_client_master_tbls('hts'))
 
+
+
+# print(create_dbs_tbls("hts"))
